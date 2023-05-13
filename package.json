@@ -11,5 +11,8 @@
     "url": "git+https://github.com/Hailey-HengyiZhao/fragments"
   },
   "author": "Hengyi Zhao",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "2.8.8"
+  }
 }
