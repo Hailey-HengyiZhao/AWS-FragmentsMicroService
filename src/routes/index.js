@@ -21,11 +21,6 @@ router.use(`/v1`, authenticate(), require('./api'));
 
 
 /**
- * POST request of our API routes on /fragment to include an API version.
- */
-router.post('/fragments', require('./api/post'));
-
-/**
  * Define a simple health check route. If the server is running
  * we'll respond with a 200 OK.  If not, the server isn't healthy.
  */
