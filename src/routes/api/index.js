@@ -12,7 +12,7 @@ const router = express.Router();
 router.get('/fragments', require('./get'));
 
 // // POST /V1/fragments
-// router.post("/fragments",require("./post") );
+router.post("/fragments",require("./post") );
 
 // Other routes will go here later on...
 module.exports = router;

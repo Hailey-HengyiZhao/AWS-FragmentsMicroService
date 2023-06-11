@@ -7,7 +7,7 @@ const {
   listFragments,
   deleteFragment,
 } = require('../../src/model/data/memory/index');
-const data = require('../../src/model/data');
+
 
 describe('memory-db', () => {
   let db;
