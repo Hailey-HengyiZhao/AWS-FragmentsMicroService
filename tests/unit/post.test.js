@@ -26,6 +26,6 @@ describe('POST /v1/fragments', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('ok');
-    expect(res.body.fragments[0].ownerId).toEqual('user1@email.com');
+    expect(res.body.fragment.ownerId).toEqual('user1@email.com');
   });
 });

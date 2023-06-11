@@ -28,7 +28,5 @@ module.exports = async (req, res) => {
     `${req.protocol}://${req.headers.host}/v1/fragments/${fragment.id}`;
   res.setHeader('Location', fragmentUrl);
 
-  const fragmentsOwnedByUser = await Fragment.byUser(fragment.ownerId, true);
-
-  res.status(200).json(createSuccessResponse({ fragments: fragmentsOwnedByUser}));
+  res.status(200).json(createSuccessResponse({ fragment: fragment}));
 };
