@@ -83,24 +83,24 @@ class Fragment {
    * @param {string} id fragment's id
    * @returns Promise<void>
    */
-  static async delete(ownerId, id) {
-    deleteFragment(ownerId, id);
+  static delete(ownerId, id) {
+    return deleteFragment(ownerId, id);
   }
 
   /**
    * Saves the current fragment to the database
    * @returns Promise<void>
    */
-  async save() {
+  save() {
     this.updated = new Date().toISOString();
-    await writeFragment(this);
+    return writeFragment(this);
   }
 
   /**
    * Gets the fragment's data from the database
    * @returns Promise<Buffer>
    */
-  async getData() {
+  getData() {
     return readFragmentData(this.ownerId, this.id);
   }
 

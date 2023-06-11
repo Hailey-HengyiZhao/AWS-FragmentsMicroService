@@ -1,66 +1,34 @@
-const { createSuccessResponse, createErrorResponse } = require('../../response');
+const { createSuccessResponse } = require('../../response');
 const { Fragment } = require('../../model/fragment');
-const contentType = require('content-type');
 const logger = require('../../logger');
-const express = require('express');
 
-const rawBody = () =>
-  express.raw({
-    inflate: true,
-    limit: '5mb',
-    type: (req) => {
-      const { type } = contentType.parse(req.headers['content-type']);
-      return Fragment.isSupportedType(type);
-    },
+module.exports = async (req, res) => {
+  const fragmentContent = req.body;
+  const ownerId = req.user;
+
+  const fragment = new Fragment({
+    ownerId: ownerId,
+    type: req.get('Content-Type'),
   });
 
-module.exports = [
-  rawBody,
-  async (req, res) => {
-    try {
-      const { type } = contentType.parse(req.headers['content-type']);
-      logger.debug('Create type: ' + type);
+  logger.debug('Create Fragment having ownerId: ' + fragment.ownerId + ' Type: ' + fragment.type);
 
-      if (!Fragment.isSupportedType(type)) {
-        const code = 415;
-        const msg = `Unsupported content type: ${type}`;
-        logger.error('error', msg);
-        res.status(code).json(createSuccessResponse(code, msg));
-        return;
-      }
+  await fragment.save();
+  await fragment.setData(fragmentContent);
 
-      const fragmentContent = req.body;
-      const ownerId = req.user.id;
+  logger.debug(
+    'Set the fragment content:' +
+      fragmentContent +
+      ' into fragment with ownerId ' +
+      fragment.ownerId
+  );
 
-      const fragment = new Fragment({
-        ownerId: ownerId,
-        type: req.headers['content-type'],
-        size: fragmentContent.length,
-      });
-      logger.debug('Create Fragment having ownerId: ' + fragment.ownerId + ' Type: ' + type + '');
+  let fragmentUrl =
+    `${process.env.API_URL}/v1/fragments/${fragment.id}` ||
+    `${req.protocol}://${req.headers.host}/v1/fragments/${fragment.id}`;
+  res.setHeader('Location', fragmentUrl);
 
-      await fragment.save();
-      await fragment.setData(fragmentContent);
+  const fragmentsOwnedByUser = await Fragment.byUser(fragment.ownerId, true);
 
-      logger.debug(
-        'Set the fragment content:' +
-          fragmentContent +
-          ' into fragment with ownerId ' +
-          fragment.ownerId
-      );
-
-      let fragmentUrl =
-        `${process.env.API_URL}/v1/fragments/` ||
-        `${req.protocol}://${req.headers.host}/v1/fragments/`;
-      res.setHeader('Location', fragmentUrl);
-
-      res.status(200).json(createSuccessResponse(fragment.byUser(ownerId)));
-
-    } catch (error) {
-      const code = 500;
-      const msg = 'Failed to create fragment';
-      logger.error({ error }, `Error creating fragment`);
-      res.status(code).json(createErrorResponse(code, msg));
-    }
-  },
-];
+  res.status(200).json(createSuccessResponse({ fragments: fragmentsOwnedByUser}));
+};
