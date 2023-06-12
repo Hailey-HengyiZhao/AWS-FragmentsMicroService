@@ -18,7 +18,7 @@ describe('GET /v1/fragments/:id', () => {
     const res = await request(app).get(`/v1/fragments/${fragmentId}`).auth(email, 'password1');
 
     expect(res.statusCode).toBe(200);
-    expect(res.text).toEqual(fragmentData); // replace with the expected data
+    expect(res.text).toEqual(fragmentData);
   });
 
   test('Res fragment with incorrect id', async () => {
