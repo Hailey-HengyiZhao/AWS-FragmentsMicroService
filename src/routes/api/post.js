@@ -3,7 +3,6 @@ const { Fragment } = require('../../model/fragment');
 const logger = require('../../logger');
 
 module.exports = async (req, res) => {
-
   const type = req.get('Content-Type');
 
   // Checking the Content-Type to be text
@@ -19,7 +18,6 @@ module.exports = async (req, res) => {
     ownerId: ownerId,
     type: type,
   });
-
   logger.debug('Create Fragment having ownerId: ' + fragment.ownerId + ' Type: ' + fragment.type);
 
   await fragment.save();
@@ -28,7 +26,7 @@ module.exports = async (req, res) => {
   logger.debug(
     'Set the fragment content:' +
       fragmentContent +
-      ' into fragment with ownerId ' +
+      ' into fragment.ownerId ' +
       fragment.ownerId
   );
 
@@ -36,6 +34,8 @@ module.exports = async (req, res) => {
     `${process.env.API_URL}/v1/fragments/${fragment.id}` ||
     `${req.protocol}://${req.headers.host}/v1/fragments/${fragment.id}`;
   res.setHeader('Location', fragmentUrl);
+  logger.debug('Create new Header.Location with URL address: ' + fragmentUrl);
 
   res.status(200).json(createSuccessResponse({ fragment: fragment }));
+  logger.debug('Creating new response with { status: ok, fragment: [' + fragment + ']}');
 };

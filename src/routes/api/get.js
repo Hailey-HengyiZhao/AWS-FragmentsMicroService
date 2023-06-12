@@ -7,11 +7,14 @@ const logger = require('../../logger');
  * Get a list of fragments for the current user
  */
 module.exports = async (req, res) => {
-  // TODO: this is just a placeholder to get something working...
+
+  const { expand } = req.query;
+  logger.debug("The expand is: " + expand);
+
   logger.debug('User: ' + req.user);
 
-  const fragment = await Fragment.byUser(req.user);
-  logger.debug('With following fragments: ' + fragment);
+  const fragment = await Fragment.byUser(req.user,expand ==="1");
+  logger.debug('With following fragment: ' + fragment);
 
   const data = { status: 'ok', fragments: fragment };
   logger.debug('Received the data' + data);
