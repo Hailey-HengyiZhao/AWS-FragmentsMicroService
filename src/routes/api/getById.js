@@ -12,13 +12,12 @@ module.exports = async (req, res) => {
     logger.debug('Id is: ' + id);
 
     const fragment = await Fragment.byId(req.user, id);
-
     logger.debug('With Fragment: ' + fragment);
+    
+    const fragmentContent = await fragment.getData(fragment.ownerId, fragment.id);
+    logger.debug('Received the data' + fragmentContent.toString());
 
-    const data = { fragment };
-    logger.debug('Received the data' + data);
-
-    res.status(200).json(createSuccessResponse(data));
+    res.status(200).send(fragmentContent.toString());
   } catch (err) {
     logger.error('Fragment is not existed:', err);
     res.status(404).json({ error: 'Fragment is not existed' });
