@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
 
   logger.debug('User: ' + req.user);
 
-  const fragment = await Fragment.byUser(req.user,expand ==="1");
+  const fragment = await Fragment.byUser(req.user,expand === "1" );
   logger.debug('With following fragment: ' + fragment);
 
   const data = { status: 'ok', fragments: fragment };
