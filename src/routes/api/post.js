@@ -19,15 +19,17 @@ module.exports = async (req, res) => {
     type: type,
   });
   logger.debug('Create Fragment having ownerId: ' + fragment.ownerId + ' Type: ' + fragment.type);
-
-  await fragment.save();
-  await fragment.setData(fragmentContent);
+  
+  try {
+    await fragment.save();
+    await fragment.setData(fragmentContent);
+  } catch (err) {
+    logger.error('Async Error:', err);
+    res.status(404).json({ error: 'Can not save the fragment' });
+  }
 
   logger.debug(
-    'Set the fragment content:' +
-      fragmentContent +
-      ' into fragment.ownerId ' +
-      fragment.ownerId
+    'Set the fragment content:' + fragmentContent + ' into fragment.ownerId ' + fragment.ownerId
   );
 
   let fragmentUrl =
@@ -36,6 +38,6 @@ module.exports = async (req, res) => {
   res.setHeader('Location', fragmentUrl);
   logger.debug('Create new Header.Location with URL address: ' + fragmentUrl);
 
-  res.status(200).json(createSuccessResponse({ fragment: fragment }));
+  res.status(201).json(createSuccessResponse({ fragment: fragment }));
   logger.debug('Creating new response with { status: ok, fragment: [' + fragment + ']}');
 };

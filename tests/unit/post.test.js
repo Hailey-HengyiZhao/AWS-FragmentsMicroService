@@ -40,7 +40,7 @@ describe('POST /v1/fragments', () => {
       .auth(email, 'password1') 
       .send(fragmentData);
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');
     expect(res.body.fragment.ownerId).toEqual(hash(email));
   });
