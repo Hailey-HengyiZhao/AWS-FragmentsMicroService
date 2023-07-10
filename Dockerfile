@@ -56,10 +56,4 @@ COPY ./tests/.htpasswd ./tests/.htpasswd
 # We run our service on port 8080
 EXPOSE 8080
 
-CMD npm start && \
-    sleep 10 && \
-    curl -i -u user1@email.com:password1 \
-    http://localhost:$PORT/v1/fragments && \
-    sleep 5 && \
-    curl -i -u user1@email.com:password1 \
-    http://localhost:$PORT/v1/fragments
+CMD ["bash", "-c", "npm start && sleep 10 && curl -i -u user1@email.com:password1 http://localhost:$PORT/v1/fragments && sleep 5 && curl -i -u user1@email.com:password1 http://localhost:$PORT/v1/fragments"]
