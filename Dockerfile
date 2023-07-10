@@ -50,10 +50,10 @@ COPY --from=dependencies /app/node_modules ./node_modules
 # Copy our HTPASSWD file
 COPY ./tests/.htpasswd ./tests/.htpasswd
 
-# # Start the container by running our server
-# CMD npm start
+# Start the container by running our server
+CMD npm start
 
 # We run our service on port 8080
 EXPOSE 8080
 
-CMD ["bash", "-c", "npm start && sleep 10 && curl -i -u user1@email.com:password1 http://localhost:$PORT/v1/fragments && sleep 5 && curl -i -u user1@email.com:password1 http://localhost:$PORT/v1/fragments"]
+# CMD ["bash", "-c", "npm start && sleep 10 && curl -i -u user1@email.com:password1 http://localhost:$PORT/v1/fragments && sleep 5 && curl -i -u user1@email.com:password1 http://localhost:$PORT/v1/fragments"]
