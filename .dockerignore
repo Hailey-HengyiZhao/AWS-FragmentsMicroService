@@ -2,7 +2,8 @@
 .vscode/
 coverage/
 node_modules/
-tests/unit/
+tests/
+!tests/.htpasswd
 .env
 .eslintrc.js
 .git/

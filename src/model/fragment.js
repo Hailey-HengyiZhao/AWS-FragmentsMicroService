@@ -116,6 +116,7 @@ class Fragment {
     this.updated = new Date().toISOString();
     this.size = Buffer.byteLength(data);
     await writeFragmentData(this.ownerId, this.id, data);
+    await this.save();
   }
   /**
    * Returns the mime type (e.g., without encoding) for the fragment's type:
