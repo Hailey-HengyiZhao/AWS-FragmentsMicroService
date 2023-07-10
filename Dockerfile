@@ -51,7 +51,7 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY ./tests/.htpasswd ./tests/.htpasswd
 
 # Start the container by running our server
-CMD npm start
+CMD ["bash", "-c", "npm start" ]
 
 # We run our service on port 8080
 EXPOSE 8080
