@@ -19,3 +19,7 @@ To connect to debugger
 # npm run lint
 
 To run ESLint
+
+# npm run coverage
+
+To test the coverage of Unit testing
