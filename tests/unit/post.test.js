@@ -24,14 +24,14 @@ describe('POST /v1/fragments', () => {
 
     const res = await request(app)
     .post('/v1/fragments')
-    .set('Content-Type', 'text/html')
+    .set('Content-Type', 'image/png')
     .auth(email, 'password1') 
     .send(fragmentData);
 
     expect(res.statusCode).toBe(415);
   })
 
-  test('Res fragment with correct Content-Type', async () => {
+  test('Res fragment with correct Text/plain Content Type', async () => {
     const fragmentData = "This is a sample fragment text.";
 
     const res = await request(app)
@@ -39,6 +39,48 @@ describe('POST /v1/fragments', () => {
       .set('Content-Type', 'text/plain')
       .auth(email, 'password1') 
       .send(fragmentData);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('ok');
+    expect(res.body.fragment.ownerId).toEqual(hash(email));
+  });
+
+  test('Res fragment with correct Text/markdown Content Type', async () => {
+    const fragmentData = "This is a sample fragment text.";
+
+    const res = await request(app)
+      .post('/v1/fragments')
+      .set('Content-Type', 'text/markdown')
+      .auth(email, 'password1') 
+      .send(fragmentData);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('ok');
+    expect(res.body.fragment.ownerId).toEqual(hash(email));
+  });
+
+  test('Res fragment with correct Text/html Content Type', async () => {
+    const fragmentData = "This is a sample fragment text.";
+
+    const res = await request(app)
+      .post('/v1/fragments')
+      .set('Content-Type', 'text/html')
+      .auth(email, 'password1') 
+      .send(fragmentData);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('ok');
+    expect(res.body.fragment.ownerId).toEqual(hash(email));
+  });
+
+  test('Res fragment with correct application/json Content Type', async () => {
+    const fragmentData = "This is a sample fragment text.";
+
+    const res = await request(app)
+      .post('/v1/fragments')
+      .set('Content-Type', 'application/json')
+      .auth(email, 'password1') 
+      .send({message:fragmentData});
 
     expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');

@@ -19,11 +19,13 @@ const rawBody = () =>
       return Fragment.isSupportedType(type);
     },
   });
-// GET /v1/fragments/:id
-router.get('/fragments/:id', require('./getById'));
+
 
 //GET /v1/fragments/:id/info
 router.get('/fragments/:id/info', require('./getIdInfo'));
+
+// GET /v1/fragments/:id  and /v1/fragments/:id.ext
+router.get('/fragments/:id', require('./getById'));
 
 // Define our first route, which will be: GET /v1/fragments
 router.get('/fragments', require('./get'));

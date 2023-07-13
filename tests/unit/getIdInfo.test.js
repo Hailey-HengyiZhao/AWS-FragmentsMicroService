@@ -3,7 +3,6 @@ const request = require('supertest');
 const app = require('../../src/app');
 
 describe('GET /v1/fragments/:id', () => {
-  
   const email = 'user1@email.com';
   const fragmentData = 'Expect to be the FragmentContent';
   const contentType = 'text/plain';
@@ -37,4 +36,5 @@ describe('GET /v1/fragments/:id', () => {
 
     expect(res.statusCode).toBe(404);
   });
+
 });
