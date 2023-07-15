@@ -57,7 +57,7 @@ CMD ["bash", "-c", "npm start" ]
 EXPOSE 8080
 
 # HealthCheck
-HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \
-    CMD curl --fail localhost${PORT} || exit 1
+# HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \
+#     CMD curl --fail localhost${PORT} || exit 1
     
 # CMD ["bash", "-c", "npm start && sleep 10 && curl -i -u user1@email.com:password1 http://localhost:$PORT/v1/fragments && sleep 5 && curl -i -u user1@email.com:password1 http://localhost:$PORT/v1/fragments"]
