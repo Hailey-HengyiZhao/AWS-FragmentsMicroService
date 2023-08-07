@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
   // Send a 200 'OK' response
   res.status(200).json(
     createSuccessResponse({
-      author: 'Hengyi Zhao',
+      author: author,
       githubUrl: 'https://github.com/Hailey-HengyiZhao/fragments',
       version,
       // Include the hostname in the response
