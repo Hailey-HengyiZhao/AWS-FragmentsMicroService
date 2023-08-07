@@ -8,7 +8,6 @@ const {
   deleteFragment,
 } = require('../../src/model/data/memory/index');
 
-
 describe('memory-db', () => {
   let db;
 
@@ -71,7 +70,6 @@ describe('memory-db', () => {
   // Testing listFragments function: raw data
   // Successfully return resolve with the value
   test('Testing listFragments function', async () => {
-    
     const fragments = [
       { ownerId: 'a', id: 'b', data: {} },
       { ownerId: 'a', id: 'c', data: {} },
@@ -116,6 +114,4 @@ describe('memory-db', () => {
     ];
     expect(async () => await Promise.all(fragments.map(writeFragment))).rejects.toThrow();
   });
-
-
 });

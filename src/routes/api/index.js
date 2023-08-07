@@ -33,5 +33,8 @@ router.get('/fragments', require('./get'));
 // POST /V1/fragments
 router.post('/fragments', rawBody(), require('./post'));
 
+// Delete /v1/fragments
+router.delete('/fragments/:id', require('./deleteById'));
+
 // Other routes will go here later on...
 module.exports = router;
