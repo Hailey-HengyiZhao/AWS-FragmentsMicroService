@@ -1,6 +1,21 @@
 // src/routes/index.js
+const { hostname } = require('os');
 
 const express = require('express');
+
+
+router.get('/', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.status(200).json(
+    createSuccessResponse({
+      author: 'Your Name',
+      githubUrl: 'https://github.com/Hailey-HengyiZhao/fragments',
+      version,
+      // Include the hostname in the response
+      hostname: hostname(),
+    })
+  );
+});
 
 // Our authentication middleware
 const { authenticate } = require('../authorization');
