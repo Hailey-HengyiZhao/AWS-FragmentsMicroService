@@ -4,19 +4,6 @@ const { hostname } = require('os');
 const express = require('express');
 
 
-router.get('/', (req, res) => {
-  res.setHeader('Cache-Control', 'no-cache');
-  res.status(200).json(
-    createSuccessResponse({
-      author: 'Your Name',
-      githubUrl: 'https://github.com/Hailey-HengyiZhao/fragments',
-      version,
-      // Include the hostname in the response
-      hostname: hostname(),
-    })
-  );
-});
-
 // Our authentication middleware
 const { authenticate } = require('../authorization');
 
@@ -42,12 +29,16 @@ router.get('/', (req, res) => {
   // Client's shouldn't cache this response (always request it fresh)
   res.setHeader('Cache-Control', 'no-cache');
   // Send a 200 'OK' response
-  const data = {
-    author,
-    githubUrl: 'https://github.com/Hailey-HengyiZhao/fragments',
-    version,
-  };
-  res.status(200).json(createSuccessResponse(data));
+  res.status(200).json(
+    createSuccessResponse({
+      author: 'Hengyi Zhao',
+      githubUrl: 'https://github.com/Hailey-HengyiZhao/fragments',
+      version,
+      // Include the hostname in the response
+      hostname: hostname(),
+    })
+  );
 });
+
 
 module.exports = router;
