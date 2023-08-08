@@ -41,6 +41,10 @@
           {
             "name": "PORT=8080",
             "value": "8080"
+          },
+          {
+            "name":"AWS_S3_BUCKET_NAME",
+            "value":"hzhao94-fragments"
           }
         ],
         "resourceRequirements": null,
