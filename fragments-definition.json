@@ -80,7 +80,7 @@
     ],
     "placementConstraints": [],
     "memory": "512",
-    "taskRoleArn": null,
+    "taskRoleArn": "arn:aws:iam::056893563781:role/LabRole",
     "compatibilities": [
       "EC2",
       "FARGATE"
