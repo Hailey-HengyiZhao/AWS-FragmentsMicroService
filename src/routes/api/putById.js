@@ -1,41 +1,54 @@
-// src/routes/api/putById.js
+const { createSuccessResponse, createErrorResponse } = require('../../response');
 const { Fragment } = require('../../model/fragment');
 const logger = require('../../logger');
 
-/**
- * Update the fragment when supporting with correct id
- */
-
 module.exports = async (req, res) => {
   try {
-    const id = req.params.id;
+    let id = req.params.id;
+    if (req.params.id.includes('.')) {
+      id = req.params.id.split('.')[0];
+    }
+
     logger.debug('Id is: ' + id);
 
-    const fragment = await Fragment.byId(req.user, id);
+    let fragment = await Fragment.byId(req.user, id);
+    
     logger.debug('With Fragment: ' + fragment);
 
     // Check if the fragment exists
     if (!fragment) {
-      return res.status(404).json({ error: 'Fragment not found' });
+      logger.error('404 Error: Fragment not found');
+      return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
     }
 
+    const type = req.get('Content-Type');
     // Check if the Content-Type matches the existing fragment's type
-    if (req.get('Content-Type') !== fragment.type) {
-      return res.status(400).json({ error: 'Content-Type does not match the fragment type' });
+
+    if (!Fragment.isSupportedType(type)) {
+      logger.error('415 Error: Not supported "Content-Type"');
+      return res.status(415).json(createErrorResponse(415, 'Not supported "Content-Type"'));
     }
 
     const updatedData = req.body;
+    logger.debug('Wanted to update the data: ' + updatedData);
 
     // Update the fragment's data
     await fragment.setData(updatedData);
-    logger.debug('Fragment data updated');
+    fragment.type = type;
 
-    // Return the updated fragment metadata
-    res
-      .status(200)
-      .json({ status: 'ok', fragment: { ...fragment, format: [req.get('Content-Type')] } });
+    logger.debug('Fragment data updated and its type is:' + fragment.type);
+
+    let fragmentUrl =
+      `${process.env.API_URL}/v1/fragments/${fragment.id}` ||
+      `${req.protocol}://${req.headers.host}/v1/fragments/${fragment.id}`;
+    res.setHeader('Location', fragmentUrl);
+
+    logger.debug('Updated Header.Location with URL address: ' + fragmentUrl);
+
+    res.status(200).json(createSuccessResponse({ fragment: fragment }));
+    logger.debug('Updated response with { status: ok, fragment: [' + fragment + ']}');
   } catch (err) {
     logger.error('Error updating fragment:', err);
-    res.status(500).json({ error: 'Failed to update fragment' });
+    res.status(500).json(createErrorResponse(500, 'Failed to update fragment'));
   }
 };

@@ -7,6 +7,7 @@ const markdownIt = require('markdown-it');
  * Get a list of fragment detail by fragment id
  */
 module.exports = async (req, res) => {
+  
   try {
     let id = req.params.id,
       ext = '';

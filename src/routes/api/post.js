@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
   logger.debug('Create Fragment having ownerId: ' + fragment.ownerId + ' Type: ' + fragment.type);
   
   try {
-    await fragment.save();
+    // await fragment.save();
     await fragment.setData(fragmentContent);
   } catch (err) {
     logger.error('Async Error:', err);
@@ -35,6 +35,7 @@ module.exports = async (req, res) => {
   let fragmentUrl =
     `${process.env.API_URL}/v1/fragments/${fragment.id}` ||
     `${req.protocol}://${req.headers.host}/v1/fragments/${fragment.id}`;
+    
   res.setHeader('Location', fragmentUrl);
   logger.debug('Create new Header.Location with URL address: ' + fragmentUrl);
 

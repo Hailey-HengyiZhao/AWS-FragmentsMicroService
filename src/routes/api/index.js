@@ -27,6 +27,9 @@ router.get('/fragments/:id/info', require('./getIdInfo'));
 // GET /v1/fragments/:id  and /v1/fragments/:id.ext
 router.get('/fragments/:id', require('./getById'));
 
+// PUT /v1/fragments/:id 
+router.put('/fragments/:id', rawBody(), require('./putById'));
+
 // Define our first route, which will be: GET /v1/fragments
 router.get('/fragments', require('./get'));
 
