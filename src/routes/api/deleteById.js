@@ -5,19 +5,13 @@ module.exports = async (req, res) => {
   try {
     let id = req.params.id;
 
-    // Handling the case where id might have an extension (like .jpg or .txt).
-    if (req.params.id.includes('.')) {
-      id = req.params.id.split('.')[0];
-    }
-
     logger.debug('Attempting to delete fragment with ID: ' + id);
 
     // Check if the fragment with the given id exists.
     const fragment = await Fragment.byId(req.user, id);
 
     if (!fragment) {
-      logger.warn('Fragment with ID ' + id + ' not found.');
-      return res.status(404).json({ error: 'Fragment not found' });
+      return res.status(400).json({ error: 'Fragment not found' });
     }
 
     logger.debug('Fragment found. Deleting...');

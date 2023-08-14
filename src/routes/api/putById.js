@@ -5,9 +5,6 @@ const logger = require('../../logger');
 module.exports = async (req, res) => {
   try {
     let id = req.params.id;
-    if (req.params.id.includes('.')) {
-      id = req.params.id.split('.')[0];
-    }
 
     logger.debug('Id is: ' + id);
 

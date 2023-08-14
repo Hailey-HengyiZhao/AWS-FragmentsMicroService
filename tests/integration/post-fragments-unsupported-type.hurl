@@ -3,8 +3,8 @@
 # Unsupported-type POST to /v1/fragments
 
 POST http://localhost:8080/v1/fragments
-# We're sending a plain text fragment
-Content-Type: image/jpeg
+# We're sending a jpge image fragment
+Content-Type: no/type
 # Include HTTP Basic Auth credentials
 [BasicAuth]
 user1@email.com:password1
