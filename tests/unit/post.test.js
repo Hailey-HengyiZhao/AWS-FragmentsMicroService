@@ -24,7 +24,7 @@ describe('POST /v1/fragments', () => {
 
     const res = await request(app)
     .post('/v1/fragments')
-    .set('Content-Type', 'image/png')
+    .set('Content-Type', 'image/incorrectType')
     .auth(email, 'password1') 
     .send(fragmentData);
 

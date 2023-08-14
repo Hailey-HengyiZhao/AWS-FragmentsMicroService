@@ -46,7 +46,7 @@ describe('PUT /v1/fragments/:id', () => {
     // Try to update with wrong Content-Type
     const resPut = await request(app)
       .put(`/v1/fragments/${fragmentId}`)
-      .set('Content-Type', 'image/jpeg')
+      .set('Content-Type', 'no/supportedType')
       .auth(email, 'password1')
       .send(fragmentData2);
 
