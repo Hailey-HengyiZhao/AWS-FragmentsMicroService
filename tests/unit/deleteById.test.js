@@ -42,4 +42,15 @@ describe('DELETE /v1/fragments/:id', () => {
 
     expect(resDelete.statusCode).toBe(404);
   });
+
+  test('Delete fragment with incorrect id', async () => {
+    // Using an incorrect fragmentId for deletion
+    const fragmentId = 'incorrectId';
+
+    const resDelete = await request(app)
+      .delete(`/v1/fragments/${fragmentId}`)
+      .auth(email, 'password1');
+
+    expect(resDelete.statusCode).toBe(404);
+  });
 });

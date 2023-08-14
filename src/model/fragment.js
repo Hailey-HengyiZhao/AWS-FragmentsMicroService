@@ -20,7 +20,6 @@ const validTypes = [
   'text/markdown',
   'text/html',
   'application/json',
-  'text/*',
   `image/png`,
   `image/jpeg`,
   `image/webp`,
