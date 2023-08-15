@@ -63,6 +63,6 @@ describe('PUT /v1/fragments/:id', () => {
       .auth(email, 'password1')
       .send(fragmentData2);
 
-    expect(resPut.statusCode).toBe(500);
+    expect(resPut.statusCode).toBe(404);
   });
 });

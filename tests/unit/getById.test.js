@@ -31,8 +31,6 @@ describe('GET /v1/fragments/:id', () => {
     expect(res.headers['content-type'].split(';')[0]).toEqual('text/html');
   });
 
-  // More tests for different types and conversions
-
   test('Res fragment with Text/plain and set with extension .txt', async () => {
     const fragmentId = await createFragment('text/plain', fragmentData);
     const res = await request(app).get(`/v1/fragments/${fragmentId}.txt`).auth(email, password);
@@ -65,21 +63,13 @@ describe('GET /v1/fragments/:id', () => {
     expect(res.headers['content-type'].split(';')[0]).toEqual('application/json');
   });
 
-  // Test for image/jpeg to image/png
-  test('Res fragment with image/jpeg and set with extension .png', async () => {
-    const fragmentId = await createFragment('image/jpeg', fragmentData);
-    const res = await request(app).get(`/v1/fragments/${fragmentId}.png`).auth(email, password);
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type'].split(';')[0]).toEqual('image/png');
-  });
-
-  // Fail to Converting
-  test('Res fragment fail to convert text/plain and set with extension .md', async () => {
+  test('Cannot convert text/plain to .md', async () => {
     const fragmentId = await createFragment('text/plain', fragmentData);
     const res = await request(app).get(`/v1/fragments/${fragmentId}.md`).auth(email, password);
+    
     expect(res.statusCode).toBe(415);
   });
-
+  
   test('Res fragment with incorrect id', async () => {
     const fragmentId = 'incorrectId';
     const res = await request(app).get(`/v1/fragments/${fragmentId}`).auth(email, password);

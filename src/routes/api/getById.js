@@ -1,6 +1,8 @@
 // src/routes/api/getById.js
+
 const { Fragment } = require('../../model/fragment');
 const logger = require('../../logger');
+const { createErrorResponse } = require('../../response');
 const markdownIt = require('markdown-it');
 const sharp = require('sharp');
 
@@ -50,28 +52,37 @@ module.exports = async (req, res) => {
     logger.debug('Id is: ' + id);
     logger.debug('ext is: ' + ext);
 
+    let fragmentList = await Fragment.byUser(req.user);
+    
+    // Check if the fragment exists
+    if (!fragmentList.includes(id)) {
+      logger.error('404 Error: Fragment not found');
+      return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
+    }
+
+
     const fragment = await Fragment.byId(req.user, id);
     logger.debug('With Fragment: ' + fragment);
 
     if (!fragment) {
       return res.status(404).json({ error: 'Fragment not found' });
     }
+    const response = new Fragment(fragment);
+    const fragmentContent = await response.getData();
 
-    const fragmentContent = await fragment.getData(fragment.ownerId, fragment.id);
-    logger.debug('Received the data: ' + fragmentContent.toString());
+    // logger.debug('Received the data: ' + fragmentContent.toString());
     logger.debug('Fragment Type is:' + fragment.type);
 
     // If route includes .ext
     if (ext) {
-
       if (validSameType(fragment.type, ext)) {
         logger.debug('No converting happened...');
         res.set('Content-Type', fragment.type);
         return res.status(200).send(fragmentContent);
       }
 
-      // logger.debug('Now Starts conversion from '+ fragment.type + ' to ' + ext + '...');
       if (validConversion(fragment.type, ext)) {
+        logger.debug('Now Starts conversion from ' + fragment.type + ' to ' + ext + '...');
         switch (ext) {
           case '.txt':
             logger.debug('Converting the' + fragment.type + ' to .txt ...');
@@ -97,33 +108,29 @@ module.exports = async (req, res) => {
           case '.json':
             logger.debug('Converting the' + fragment.type + ' to .json ...');
             res.set('Content-Type', 'application/json');
-            res.status(200).json({fragment:fragmentContent});
+            res.status(200).json({ fragment: fragmentContent });
             break;
 
           case '.png':
           case '.jpg':
           case '.webp':
           case '.gif':
-            logger.debug('Converting the' + fragment.type + ' to '+ext +' ...');
-            if (
-              ['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(fragment.contentType)
-            ) {
+            logger.debug('Converting the' + fragment.type + ' to ' + ext + ' ...');
+            if (['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(fragment.type)) {
               sharp(fragmentContent)
                 .toFormat(ext.replace('.', ''))
-                .toBuffer()
+                .toBuffer({ resolveWithObject: true })
                 .then((data) => {
-                  res.set('Content-Type', `image/${ext.replace('.', '')}`);
+                  logger.debug(`Successfully converted to ${ext}`);
+                  res.set('Content-Type', `image/${data.info.format}`);
                   res.status(200).send(data);
                 })
                 .catch((err) => {
                   logger.error('Error converting image:', err);
+                  logger.error('Error converting image:', err);
                   res.status(500).json({ error: 'Image conversion failed' });
                 });
             }
-            break;
-
-          default:
-            res.status(415).json({ error: 'Unsupported conversion type' });
             break;
         }
       } else {
@@ -138,7 +145,7 @@ module.exports = async (req, res) => {
       res.status(200).send(fragmentContent);
     }
   } catch (err) {
-    logger.error('Error fetching fragment:', err);
-    res.status(404).json({ error: 'Failed to fetch the fragment' });
+    logger.error('Something wrong', err);
+    res.status(500).json({ error: 'Failed to fetch the fragment' });
   }
 };

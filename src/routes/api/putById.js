@@ -8,15 +8,17 @@ module.exports = async (req, res) => {
 
     logger.debug('Id is: ' + id);
 
-    let fragment = await Fragment.byId(req.user, id);
+    let fragmentList = await Fragment.byUser(req.user);
     
-    logger.debug('With Fragment: ' + fragment);
-
     // Check if the fragment exists
-    if (!fragment) {
+    if (!fragmentList.includes(id)) {
       logger.error('404 Error: Fragment not found');
       return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
     }
+
+    let fragment = await Fragment.byId(req.user, id);
+
+    logger.debug('With Fragment: ' + fragment);
 
     const type = req.get('Content-Type');
     // Check if the Content-Type matches the existing fragment's type
