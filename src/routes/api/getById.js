@@ -10,7 +10,7 @@ const sharp = require('sharp');
 
 function validConversion(contentType, extension) {
   const conversions = {
-    'text/plain': ['.txt'],
+    'text/plain': ['.txt', '.json'],
     'text/markdown': ['.md', '.html', '.txt'],
     'text/html': ['.html', '.txt'],
     'application/json': ['.json', '.txt'],
@@ -21,6 +21,21 @@ function validConversion(contentType, extension) {
   };
 
   return conversions[contentType] ? conversions[contentType].includes(extension) : false;
+}
+
+function validSameType(contentType, extension) {
+  const basicType = {
+    'text/plain': '.txt',
+    'text/markdown': '.md',
+    'text/html': '.html',
+    'application/json': '.json',
+    'image/png': '.png',
+    'image/jpeg': '.jpg',
+    'image/webp': '.webp',
+    'image/gif': '.gif',
+  };
+
+  return basicType[contentType] === extension;
 }
 
 module.exports = async (req, res) => {
@@ -44,49 +59,52 @@ module.exports = async (req, res) => {
 
     const fragmentContent = await fragment.getData(fragment.ownerId, fragment.id);
     logger.debug('Received the data: ' + fragmentContent.toString());
-    logger.debug("Fragment Type is:" + fragment.type);
+    logger.debug('Fragment Type is:' + fragment.type);
 
     // If route includes .ext
     if (ext) {
+
+      if (validSameType(fragment.type, ext)) {
+        logger.debug('No converting happened...');
+        res.set('Content-Type', fragment.type);
+        return res.status(200).send(fragmentContent);
+      }
+
+      // logger.debug('Now Starts conversion from '+ fragment.type + ' to ' + ext + '...');
       if (validConversion(fragment.type, ext)) {
         switch (ext) {
           case '.txt':
+            logger.debug('Converting the' + fragment.type + ' to .txt ...');
             res.set('Content-Type', 'text/plain');
-            if (fragment.contentType === 'text/markdown') {
-                const htmlContent = markdownIt().render(fragmentContent.toString());
-                const plainContent = htmlContent.replace(/<[^>]+>/g, '');
-                res.status(200).send(plainContent);
+            if (fragment.type == 'text/markdown') {
+              const htmlContent = markdownIt().render(fragmentContent.toString());
+              const plainContent = htmlContent.replace(/<[^>]+>/g, '');
+              res.status(200).send(plainContent);
             } else {
-                res.status(200).send(fragmentContent.toString());
+              res.status(200).send(fragmentContent.toString());
             }
-            break;
-
-          case '.md':
-            res.set('Content-Type', 'text/markdown');
-            res.status(200).send(fragmentContent);
             break;
 
           case '.html':
-            // eslint-disable-next-line no-case-declarations
-            const htmlContent = markdownIt().render(fragmentContent.toString());
-            res.set('Content-Type', 'text/html');
-            res.status(200).send(htmlContent);
+            logger.debug('Converting the' + fragment.type + ' to .html ...');
+            if (fragment.type == 'text/markdown') {
+              const htmlContent = markdownIt().render(fragmentContent.toString());
+              res.set('Content-Type', 'text/html');
+              res.status(200).send(htmlContent);
+            }
             break;
 
           case '.json':
+            logger.debug('Converting the' + fragment.type + ' to .json ...');
             res.set('Content-Type', 'application/json');
-            if (fragment.contentType === 'text/markdown') {
-              const jsonData = { content: markdownIt().render(fragmentContent.toString()) };
-              res.status(200).json(jsonData);
-            } else {
-              res.status(200).json(fragmentContent);
-            }
+            res.status(200).json({fragment:fragmentContent});
             break;
 
           case '.png':
           case '.jpg':
           case '.webp':
           case '.gif':
+            logger.debug('Converting the' + fragment.type + ' to '+ext +' ...');
             if (
               ['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(fragment.contentType)
             ) {
@@ -109,11 +127,9 @@ module.exports = async (req, res) => {
             break;
         }
       } else {
-        return res
-          .status(415)
-          .json({
-            error: 'Cannot convert the Fragment Type from ' + fragment.contentType + ' to ' + ext,
-          });
+        return res.status(415).json({
+          error: 'Cannot convert the Fragment Type from ' + fragment.contentType + ' to ' + ext,
+        });
       }
       // Route without .ext
     } else {
