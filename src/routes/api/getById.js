@@ -12,10 +12,7 @@ const sharp = require('sharp');
 
 function validConversion(contentType, extension) {
   const conversions = {
-    'text/plain': ['.txt', '.json'],
-    'text/markdown': ['.md', '.html', '.txt'],
-    'text/html': ['.html', '.txt'],
-    'application/json': ['.json', '.txt'],
+    'text/markdown': ['.html'],
     'image/png': ['.png', '.jpg', '.webp', '.gif'],
     'image/jpeg': ['.jpg', '.png', '.webp', '.gif'],
     'image/webp': ['.webp', '.jpg', '.png', '.gif'],
@@ -40,6 +37,39 @@ function validSameType(contentType, extension) {
   return basicType[contentType] === extension;
 }
 
+function returnTypeFunction(extension) {
+  const returnType = {
+    '.txt': 'text/plain',
+    '.md': 'text/markdown',
+    '.html': 'text/html',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+  };
+  return returnType[extension];
+}
+
+async function convert(fragment, type) {
+  const original = await fragment.getData();
+  const transformer = sharp(original);
+  switch (type) {
+    case 'image/jpeg':
+      transformer.jpeg();
+      break;
+    case 'image/png':
+      transformer.png();
+      break;
+    case 'image/webp':
+      transformer.webp();
+      break;
+    default:
+      break;
+  }
+
+  return transformer.toBuffer();
+}
 module.exports = async (req, res) => {
   try {
     let id = req.params.id,
@@ -53,13 +83,12 @@ module.exports = async (req, res) => {
     logger.debug('ext is: ' + ext);
 
     let fragmentList = await Fragment.byUser(req.user);
-    
+
     // Check if the fragment exists
     if (!fragmentList.includes(id)) {
       logger.error('404 Error: Fragment not found');
       return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
     }
-
 
     const fragment = await Fragment.byId(req.user, id);
     logger.debug('With Fragment: ' + fragment);
@@ -69,79 +98,56 @@ module.exports = async (req, res) => {
     }
     const response = new Fragment(fragment);
     const fragmentContent = await response.getData();
-
+    const type = fragment.mimeType;
     // logger.debug('Received the data: ' + fragmentContent.toString());
-    logger.debug('Fragment Type is:' + fragment.type);
+    logger.debug('Fragment Type is:' + type);
 
     // If route includes .ext
     if (ext) {
-      if (validSameType(fragment.type, ext)) {
+      if (validSameType(type, ext)) {
         logger.debug('No converting happened...');
-        res.set('Content-Type', fragment.type);
+        res.set('Content-Type', type);
         return res.status(200).send(fragmentContent);
       }
 
-      if (validConversion(fragment.type, ext)) {
-        logger.debug('Now Starts conversion from ' + fragment.type + ' to ' + ext + '...');
+      if (validConversion(type, ext)) {
+        logger.debug('Now Starts conversion from ' + type + ' to ' + ext + '...');
         switch (ext) {
-          case '.txt':
-            logger.debug('Converting the' + fragment.type + ' to .txt ...');
-            res.set('Content-Type', 'text/plain');
-            if (fragment.type == 'text/markdown') {
-              const htmlContent = markdownIt().render(fragmentContent.toString());
-              const plainContent = htmlContent.replace(/<[^>]+>/g, '');
-              res.status(200).send(plainContent);
-            } else {
-              res.status(200).send(fragmentContent.toString());
-            }
-            break;
-
           case '.html':
-            logger.debug('Converting the' + fragment.type + ' to .html ...');
-            if (fragment.type == 'text/markdown') {
+            logger.debug('Converting the' + type + ' to .html ...');
+            if (type == 'text/markdown') {
               const htmlContent = markdownIt().render(fragmentContent.toString());
               res.set('Content-Type', 'text/html');
               res.status(200).send(htmlContent);
             }
             break;
 
-          case '.json':
-            logger.debug('Converting the' + fragment.type + ' to .json ...');
-            res.set('Content-Type', 'application/json');
-            res.status(200).json({ fragment: fragmentContent });
-            break;
-
           case '.png':
           case '.jpg':
           case '.webp':
           case '.gif':
-            logger.debug('Converting the' + fragment.type + ' to ' + ext + ' ...');
-            if (['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(fragment.type)) {
-              sharp(fragmentContent)
-                .toFormat(ext.replace('.', ''))
-                .toBuffer({ resolveWithObject: true })
-                .then((data) => {
-                  logger.debug(`Successfully converted to ${ext}`);
-                  res.set('Content-Type', `image/${data.info.format}`);
-                  res.status(200).send(data);
-                })
-                .catch((err) => {
-                  logger.error('Error converting image:', err);
-                  logger.error('Error converting image:', err);
-                  res.status(500).json({ error: 'Image conversion failed' });
-                });
+            logger.debug('Converting the' + type + ' to ' + ext + ' ...');
+
+            try {
+              const returnType = returnTypeFunction(ext);
+              const convertedImageBuffer = await convert(fragment, returnType);
+              res.set('Content-Type', returnType);
+              res.status(200).send(convertedImageBuffer);
+            } catch (err) {
+              logger.error('Error converting image:', err);
+              res.status(500).json({ error: 'Image conversion failed' });
             }
             break;
         }
       } else {
         return res.status(415).json({
-          error: 'Cannot convert the Fragment Type from ' + fragment.contentType + ' to ' + ext,
+          error: 'Cannot convert the Fragment Type from ' + type + ' to ' + ext,
         });
       }
       // Route without .ext
     } else {
       // If there's no conversion required, respond with the original fragment data
-      res.set('Content-Type', fragment.type);
+      res.set('Content-Type', type);
       res.status(200).send(fragmentContent);
     }
   } catch (err) {

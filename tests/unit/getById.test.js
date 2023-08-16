@@ -38,31 +38,7 @@ describe('GET /v1/fragments/:id', () => {
     expect(res.text).toEqual(fragmentData);
     expect(res.headers['content-type'].split(';')[0]).toEqual('text/plain');
   });
-
-  // Test for markdown to text conversion
-  test('Res fragment with Text/markdown and set with extension .txt', async () => {
-    const fragmentId = await createFragment('text/markdown', fragmentData);
-    const res = await request(app).get(`/v1/fragments/${fragmentId}.txt`).auth(email, password);
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type'].split(';')[0]).toEqual('text/plain');
-  });
-
-  // Test for markdown to text conversion
-  test('Res fragment with Text/html and set with extension .txt', async () => {
-    const fragmentId = await createFragment('text/html', fragmentData);
-    const res = await request(app).get(`/v1/fragments/${fragmentId}.txt`).auth(email, password);
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type'].split(';')[0]).toEqual('text/plain');
-  });
   
-  // Test for text/plain to json
-  test('Res fragment with text/plain and set with extension .json', async () => {
-    const fragmentId = await createFragment('text/plain', fragmentData);
-    const res = await request(app).get(`/v1/fragments/${fragmentId}.json`).auth(email, password);
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type'].split(';')[0]).toEqual('application/json');
-  });
-
   test('Cannot convert text/plain to .md', async () => {
     const fragmentId = await createFragment('text/plain', fragmentData);
     const res = await request(app).get(`/v1/fragments/${fragmentId}.md`).auth(email, password);
