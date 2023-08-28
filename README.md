@@ -10,9 +10,13 @@ To run the server with nodemon
 
 # npn run test
 
-To run a test (There is not test be specified now )
+To run all unit tests
 
-# npn run debug
+# npm run test:integration
+
+To run all hurl integration tests
+
+# npm run debug
 
 To connect to debugger
 
