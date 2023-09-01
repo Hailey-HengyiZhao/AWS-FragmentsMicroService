@@ -87,6 +87,8 @@ In the recent update to our system architecture, significant modifications were 
 
 ### Version 2 
 
-The server introduces enhanced functionality. The fragment updated to accept various ‘Content-Type’ formats such as ‘text/markdown’, ‘text/html’, ‘application/json’.
- Additionally, a new route, ‘Get /v1/fragments/:id/info’, has been added to the file. Furthermore, the ‘GET /v1/fragments/:id’ route now accepts the id with an extension. Moreover, Version 2 incorporates docker image capabilities for improved support. All images related to ‘fragments’ and ‘fragments-ui’ can be found in the Docker Hub Repository under the username ‘cchoney233233’. Lastly, the Fragment Server has enhanced the CD pipeline checks for improved reliability.
-
+In comparison to Fragment Microservice Version 1, Version 2 introduces enhanced functionality. The fragment server has been updated to accept various ‘Content-Type’ formats:
+```
+‘text/plain’, ‘text/markdown’, ‘text/html’, and ‘application/json’
+```
+Additionally, a new route, ‘Get /v1/fragments/:id/info’, has been added to the file. Furthermore, the ‘GET /v1/fragments/:id’ route now accepts the id with an extension. Moreover, Version 2 incorporates docker image capabilities for improved support. All images related to ‘fragments’ and ‘fragments-ui’ can be found in the Docker Hub Repository under the username ‘cchoney233233’. Lastly, the fragment service has enhanced the CD pipeline checks for improved reliability.
